@@ -12,8 +12,6 @@ const App = () => {
         <Router />
       </NavigationContainer>
     </Provider>
-  )
-}
 
 export default App
 
