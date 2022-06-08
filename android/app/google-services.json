@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1024918596642",
+    "project_id": "pokemonch8-b0268",
+    "storage_bucket": "pokemonch8-b0268.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1024918596642:android:000fb671e793ff252fae7b",
+        "android_client_info": {
+          "package_name": "com.pokemonchapter8"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1024918596642-q2s06otlpbovtg870dh88e1h9nk23qda.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pokemonchapter8",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1024918596642-kqmnsvqd0jmo6gtqemmsdcig8u7b3dr3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYVegaD4vEGtTxUTqHrslOKvlsYL4aRxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1024918596642-kqmnsvqd0jmo6gtqemmsdcig8u7b3dr3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
