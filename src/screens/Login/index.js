@@ -1,8 +1,10 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, Alert } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, Alert, FlatList } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import auth from '@react-native-firebase/auth';
+import { Formik } from 'formik';
+import database from '@react-native-firebase/database';
+
 import { useDispatch } from 'react-redux';
-import { LoginSuccess } from '../../redux/actions';
+import { Form } from '../../components';
 
 const Login = ({ navigation }) => {
 
@@ -11,84 +13,101 @@ const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // const [pokemondata, setPokemondata] = useState([]);
+
   // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState('');
 
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
+  const handleSubmit = values => {
+    database()
+      .ref('users/')
+      .orderByChild('emailId')
+      .equalTo(email)
+      .once('value')
+      .then(async snapshot => {
+        if (snapshot.val() == null) {
+          Alert.alert('Invalid Email Id !')
+          return false
+        }
 
-  function onLogin() {
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log('User account created & signed in!');
-        // navigation.navigate('MainApp')
+        let userData = Object.values(snapshot.val())[0]
+        if (userData?.password != password) {
+          Alert.alert('Invalid Password !')
+          return false
+        }
+        console.log('User data: ', userData);
+        dispatch(LoginSuccess(userData))
+        navigation.replace('Home')
       })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-        }
-
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
-
-        console.error(error);
-      });
   }
+
+  // useEffect(() => {
+  //   pokemon()
+  // })
+
+
+  // const renderItems = ({ item }) => (
+  //   <View>
+  //     <Text style={{ color: '#000', marginRight: 15 }}>{item.name}</Text>
+  //   </View>
+  // )
+
+  {/* <FlatList 
+      numColumns={2}
+      keyExtractor={(index)=> index.toString()}
+      data={pokemondata}
+      renderItem={renderItems}
+    /> */}
 
   return (
-    <View style={styles.container}>
 
-      <View style={styles.wrapper}>
-        <Text style={styles.title}>Sign In to your account</Text>
+    <Formik
+      initialValues={{ email: '', password: '' }}
+      onSubmit={values => handleSubmit(values)} >
 
-        <View>
+      {({ handleChange, handleBlur, handleSubmit, values }) => (
 
-          <Text style={{ fontSize: 14, color: '#000', fontWeight: '600', marginBottom: 8 }}>Email</Text>
-          <TextInput
-            style={styles.textinput}
-            placeholder="Email"
-            value={email}
-            // onChangeText={value => setEmail(value)}
-            placeholderTextColor="#bbb"
+        <View style={styles.container}>
+          <View style={styles.wrapper}>
 
-          />
+            <Text style={styles.title}>Sign In to your account</Text>
+            
+            <Text style={{ fontSize: 14, color: '#000', fontWeight: '600', marginBottom: 8 }}>Email</Text>
+            <Form
+              placeholder={'Email Address'}
+              onChangeText={handleChange('email')}
+              value={values.email}
+            />
 
-          <Text style={{ fontSize: 14, color: '#000', fontWeight: '600', marginBottom: 8 }}>Password</Text>
-          <TextInput
-            style={styles.textinput}
-            placeholderTextColor="#bbb"
-            placeholder="Password"
-            value={password}
-            secureTextEntry={true}
-            // onChangeText={value => setPassword(value)}
+            <Text style={{ fontSize: 14, color: '#000', fontWeight: '600', marginBottom: 8 }}>Password</Text>
+            <Form
+              placeholder={'Password'}
+              secureTextEntry={true}
+              value={values.password}
+              onChangeText={handleChange('password')}
+            />
 
-          />
-
-          <View style={styles.LoginButton}>
-            <TouchableOpacity>
-              <Text style={styles.login}>Login</Text>
-            </TouchableOpacity>
-
-
-            {/* //! TO REGISTER */}
-            <View style={styles.register}>
-              <Text style={{ color: '#000' }}>Don't have an account? </Text>
-
-              <TouchableOpacity
-                onPress={() => navigation.replace('Register')}>
-
-                <Text style={{ color: '#1b30d1', fontWeight: 'bold' }}>Register here</Text>
+            {/* //!LOGIN BUTTON */}
+            <View style={styles.LoginButton}>
+              <TouchableOpacity onPress={handleSubmit}>
+                <Text style={styles.login}>Login</Text>
               </TouchableOpacity>
+
+              {/* //! TO REGISTER */}
+              <View style={styles.register}>
+                <Text style={{ color: '#000' }}>Don't have an account? </Text>
+
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Register')}>
+
+                  <Text style={{ color: '#1b30d1', fontWeight: 'bold' }}>Register here</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </View>
+
+      )}
+    </Formik>
   )
 }
 
@@ -120,14 +139,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
 
-  textinput: {
-    borderWidth: 0.95,
-    borderColor: '#bbb',
-    marginBottom: 12,
-    borderRadius: 8,
-    color: '#000',
-    paddingHorizontal: 15
-  },
   login: {
     color: '#FFF',
     backgroundColor: '#8591d6',
