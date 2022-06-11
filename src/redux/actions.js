@@ -1,6 +1,5 @@
 import { LOGIN_SUCCESS, REGISTER_SUCCESS,POKEMON_SUCCESS } from './types';
 import axios from "axios";
-import { Alert } from 'react-native';
 
 export const LoginSuccess = payload => ({
   type: LOGIN_SUCCESS,
@@ -17,7 +16,7 @@ export const PokemonSuccess = payload => ({
   payload: payload
 });
 
-export function pokemon() {
+export function pokemonSuccess() {
   return async dispatch => { 
     await axios.get('https://pokeapi.co/api/v2/pokemon/')
     .then(async response => {
