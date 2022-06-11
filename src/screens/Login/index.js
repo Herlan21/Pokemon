@@ -5,23 +5,19 @@ import database from '@react-native-firebase/database';
 
 import { useDispatch } from 'react-redux';
 import { Form } from '../../components';
+import {LoginSuccess} from '../../redux/actions'
+import * as Yup from 'yup';
 
 const Login = ({ navigation }) => {
 
   const dispatch = useDispatch()
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  // const [pokemondata, setPokemondata] = useState([]);
-
   // Set an initializing state whilst Firebase connects
-
   const handleSubmit = values => {
     database()
       .ref('users/')
       .orderByChild('emailId')
-      .equalTo(email)
+      .equalTo(values.email)
       .once('value')
       .then(async snapshot => {
         if (snapshot.val() == null) {
@@ -30,7 +26,7 @@ const Login = ({ navigation }) => {
         }
 
         let userData = Object.values(snapshot.val())[0]
-        if (userData?.password != password) {
+        if (userData?.password != values.password) {
           Alert.alert('Invalid Password !')
           return false
         }
@@ -43,20 +39,6 @@ const Login = ({ navigation }) => {
   // useEffect(() => {
   //   pokemon()
   // })
-
-
-  // const renderItems = ({ item }) => (
-  //   <View>
-  //     <Text style={{ color: '#000', marginRight: 15 }}>{item.name}</Text>
-  //   </View>
-  // )
-
-  {/* <FlatList 
-      numColumns={2}
-      keyExtractor={(index)=> index.toString()}
-      data={pokemondata}
-      renderItem={renderItems}
-    /> */}
 
   return (
 
@@ -76,6 +58,7 @@ const Login = ({ navigation }) => {
               placeholder={'Email Address'}
               onChangeText={handleChange('email')}
               value={values.email}
+              handleBlur
             />
 
             <Text style={{ fontSize: 14, color: '#000', fontWeight: '600', marginBottom: 8 }}>Password</Text>

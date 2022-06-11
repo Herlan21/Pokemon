@@ -5,24 +5,21 @@ import uuid from 'react-native-uuid';
 import database from '@react-native-firebase/database';
 
 import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 const Register = ({ navigation }) => {
 
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-
-    const handleSubmit = async () => {
-        if (name == '' || email == '' || password == '' || bio == '') {
+    const handleSubmit = async values => {
+        if (values.name == '' || values.email == '' || values.password == '') {
             Alert.alert('Please fill the fields')
             return false
         }
 
         let data = {
             id: uuid.v4(),
-            name: name,
-            emailId: email,
-            password: password,
+            name: values.name,
+            emailId: values.email,
+            password: values.password,
         }
 
         database()
@@ -30,20 +27,31 @@ const Register = ({ navigation }) => {
             .set(data)
             .then(() => {
                 Alert.alert('Register Success !')
-                setName('')
-                setEmail('')
-                setPassword('')
                 navigation.replace('Login')
             });
     }
+
+    // YUP
+    const RegisterSchema = Yup.object().shape({
+        name: Yup.string()
+            .min(2, 'Too Short!')
+            .max(50, 'Too Long!')
+            .required('Required'),
+        password: Yup.string()
+            .min(2, 'Too Short!')
+            .max(50, 'Too Long!')
+            .required('Required'),
+        email: Yup.string().email('Invalid email').required('Required'),
+    });
 
     return (
 
         <Formik
             initialValues={{ name: '', email: '', password: '' }}
-            onSubmit={values => handleSubmit(values)} >
+            onSubmit={values => handleSubmit(values)}
+            validationSchema={RegisterSchema}>
 
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
+            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
 
                 <View style={styles.container}>
 
@@ -58,6 +66,11 @@ const Register = ({ navigation }) => {
                                 onChangeText={handleChange('name')}
                                 value={values.name}
                             />
+                            {errors.name && (
+                                <Text style={{ color: 'red' }}>
+                                    {errors.name}
+                                </Text>
+                            )}
 
                             <Text style={{ fontSize: 14, color: '#000', fontWeight: '600', marginBottom: 8 }}>Email</Text>
                             <FormRegister
@@ -65,6 +78,11 @@ const Register = ({ navigation }) => {
                                 onChangeText={handleChange('email')}
                                 value={values.email}
                             />
+                            {errors.email && (
+                                <Text style={{ color: 'red' }}>
+                                    {errors.email}
+                                </Text>
+                            )}
 
                             <Text style={{ fontSize: 14, color: '#000', fontWeight: '600', marginBottom: 8 }}>Password</Text>
                             <FormRegister
@@ -73,6 +91,11 @@ const Register = ({ navigation }) => {
                                 value={values.password}
                                 onChangeText={handleChange('password')}
                             />
+                            {errors.password && (
+                                <Text style={{ color: 'red' }}>
+                                    {errors.password}
+                                </Text>
+                            )}
 
 
                             {/* //! BUTTON SIGN UP */}

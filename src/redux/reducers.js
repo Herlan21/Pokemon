@@ -1,9 +1,10 @@
-import { LOGIN_SUCCESS, REGISTER_SUCCESS } from './types'
+import { LOGIN_SUCCESS, REGISTER_SUCCESS, POKEMON_SUCCESS } from './types'
 
 const initialState = {
     isLogin: false,
     isRegister: false,
-    userData: {}
+    userData: {},
+    pokeData:[]
 }
 
 const Reducers = (state = initialState, action) => {
@@ -19,6 +20,12 @@ const Reducers = (state = initialState, action) => {
                 ...state,
                 userData: action.payload,
                 isLogin: true,
+            }
+
+            case POKEMON_SUCCESS:
+            return {
+                ...state,
+                pokeData: action.payload,
             }
         default:
             return state
